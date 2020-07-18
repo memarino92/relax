@@ -3,6 +3,7 @@ import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
+import Spotify from '../../util/Spotify/Spotify';
 
 class App extends React.Component {
   constructor(props) {
@@ -11,43 +12,11 @@ class App extends React.Component {
     this.state = {
       searchTerms: '',
       
-      searchResults: [
-        {
-        name: 'Progeny of Leeches',
-        artist: 'Crucial Rip',
-        album: 'The Object of Infection',
-        id: '1'
-      },
-      {
-        name: 'The Product Is You',
-        artist: 'Incendiary',
-        album: 'Thousand Mile Stare',
-        id: '2'
-      },
-      {
-        name: 'Subjected to a Beating',
-        artist: 'Dying Fetus',
-        album: 'Reign Supreme',
-        id: '3'
-      }
-    ],
+      searchResults: [],
     
-    playlistName: 'My Playlist',
+      playlistName: 'New Playlist',
     
-    playlistTracks: [
-      {
-      name: 'Progeny of Leeches',
-      artist: 'Crucial Rip',
-      album: 'The Object of Infection',
-      id: '1'
-    },
-    {
-      name: 'The Product Is You',
-      artist: 'Incendiary',
-      album: 'Thousand Mile Stare',
-      id: '2'
-    }
-  ]
+      playlistTracks: []
     };
 
     this.addTrack = this.addTrack.bind(this);
@@ -84,21 +53,32 @@ class App extends React.Component {
     });
   }
 
-  savePlaylist() {
-    const trackURIs = this.state.playlistTracks.map(track => track.id);
+  async savePlaylist() {
+    const trackURIs = this.state.playlistTracks.map(track => track.uri);
     const playlistName = this.state.playlistName;
-
-    console.log(trackURIs, playlistName);
+    await Spotify.savePlaylist(playlistName, trackURIs);
+    alert('Playlist saved!');
+    this.setState({
+      playlistName: 'New Playlist',
+      playlistTracks: []
+    });
   }
 
-  search() {
-    console.log(this.state.searchTerms);
+  async search() {
+    const newResults = await Spotify.search(this.state.searchTerms);
+    this.setState({
+      searchResults: newResults
+    });
   }
 
   updateSearchTerms(terms) {
     this.setState({
       searchTerms: terms
     });
+  }
+
+  componentDidMount() {
+    window.addEventListener('load', () => {Spotify.getAccessToken()});
   }
 
   render() {
@@ -108,7 +88,8 @@ class App extends React.Component {
         <div className="App">
             <SearchBar 
             onSearch={this.search}
-            onTermChange={this.updateSearchTerms} />
+            onTermChange={this.updateSearchTerms} 
+            playlistName={this.state.playlistName}/>
           <div className="App-playlist">
             <SearchResults 
             searchResults={this.state.searchResults} 
