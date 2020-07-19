@@ -7,10 +7,22 @@ class Track extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            deltaPositionY: 0
+        }
+
         this.addTrack = this.addTrack.bind(this);
         this.removeTrack = this.removeTrack.bind(this);
 
     }
+
+    handleDrag = (e, ui) => {
+        const y = this.state.deltaPositionY;
+        this.setState({
+          deltaPositionY: y + ui.deltaY,
+          }
+        );
+      }
 
     addTrack() {
         this.props.onAdd(this.props.track);
@@ -38,7 +50,7 @@ class Track extends React.Component {
 
     renderHandle() {
         if (this.props.isDraggable) {
-            return <button className="handle">||0||</button>;
+            return <button className="handle">{this.state.deltaPositionY}||{this.props.trackPosition}</button>;
         } else {
             return;
         }
@@ -49,7 +61,8 @@ class Track extends React.Component {
             <Draggable
             axis="y"
             handle=".handle"
-            bounds=".TrackList">
+            disabled={!this.props.isDraggable}
+            onDrag={this.handleDrag}>
                 <div className="Track">
                     {this.renderHandle()}
                     <div className="Track-information">
