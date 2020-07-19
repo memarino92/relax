@@ -1,4 +1,5 @@
 import React from 'react';
+import Draggable from 'react-draggable';
 import './Track.css';
 
 class Track extends React.Component {
@@ -19,7 +20,7 @@ class Track extends React.Component {
         this.props.onRemove(this.props.track);
     }
     
-    renderAction(track) {
+    renderAction() {
         if (this.props.isRemoval) {
             return (
                 <button 
@@ -34,16 +35,30 @@ class Track extends React.Component {
             );
         }
     }
+
+    renderHandle() {
+        if (this.props.isDraggable) {
+            return <button className="handle">||0||</button>;
+        } else {
+            return;
+        }
+    }
     
     render() {
         return (
-            <div className="Track">
-                <div className="Track-information">
-                    <h3>{this.props.track.name}</h3>
-                    <p>{this.props.track.artist} | {this.props.track.album}</p>
+            <Draggable
+            axis="y"
+            handle=".handle"
+            bounds=".TrackList">
+                <div className="Track">
+                    {this.renderHandle()}
+                    <div className="Track-information">
+                        <h3>{this.props.track.name}</h3>
+                        <p>{this.props.track.artist} | {this.props.track.album}</p>
+                    </div>
+                    {this.renderAction()}
                 </div>
-                {this.renderAction(this.props.track)}
-            </div>
+            </Draggable>
         );
     }
 }
