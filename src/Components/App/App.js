@@ -4,6 +4,7 @@ import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import Spotify from '../../util/Spotify/Spotify';
+import { DragDropContext } from 'react-beautiful-dnd';
 
 class App extends React.Component {
   constructor(props) {
@@ -81,6 +82,10 @@ class App extends React.Component {
     window.addEventListener('load', () => {Spotify.getAccessToken()});
   }
 
+  onDragEnd(result) {
+    //TODO reorder column
+  }
+
   render() {
     return (
       <div>
@@ -94,12 +99,14 @@ class App extends React.Component {
             <SearchResults 
             searchResults={this.state.searchResults} 
             onAdd={this.addTrack} />
-            <Playlist 
-            playlistName={this.state.playlistName} 
-            playlistTracks={this.state.playlistTracks}
-            onRemove={this.removeTrack} 
-            onNameChange={this.updatePlaylistName} 
-            onSave={this.savePlaylist} />
+            <DragDropContext onDragEnd={this.onDragEnd}>
+              <Playlist 
+              playlistName={this.state.playlistName} 
+              playlistTracks={this.state.playlistTracks}
+              onRemove={this.removeTrack} 
+              onNameChange={this.updatePlaylistName} 
+              onSave={this.savePlaylist} />
+            </DragDropContext>
           </div>
         </div>
       </div>

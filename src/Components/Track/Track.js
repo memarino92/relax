@@ -34,17 +34,39 @@ class Track extends React.Component {
             );
         }
     }
-    
-    render() {
-        return (
-            <div className="Track">
-                <div className="Track-information">
-                    <h3>{this.props.track.name}</h3>
-                    <p>{this.props.track.artist} | {this.props.track.album}</p>
+
+    renderDroppable() {
+        if (this.props.isDroppable) {
+            const { provided, innerRef } = this.props;
+            return (
+                <div
+                className="Track"
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                ref={innerRef}
+                key={this.props.key}>
+                    <div className="Track-information">
+                        <h3>{this.props.track.name}</h3>
+                        <p>{this.props.track.artist} | {this.props.track.album}</p>
+                    </div>
+                    {this.renderAction(this.props.track)}
                 </div>
-                {this.renderAction(this.props.track)}
-            </div>
-        );
+            );
+        } else {
+            return (
+                <div className="Track">
+                    <div className="Track-information">
+                        <h3>{this.props.track.name}</h3>
+                        <p>{this.props.track.artist} | {this.props.track.album}</p>
+                    </div>
+                    {this.renderAction(this.props.track)}
+                </div>
+            );
+        }
+    }
+
+    render() {
+        return this.renderDroppable();
     }
 }
 
