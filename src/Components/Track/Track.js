@@ -7,9 +7,7 @@ class Track extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            deltaPositionY: 0
-        }
+        
 
         this.addTrack = this.addTrack.bind(this);
         this.removeTrack = this.removeTrack.bind(this);
@@ -17,11 +15,8 @@ class Track extends React.Component {
     }
 
     handleDrag = (e, ui) => {
-        const y = this.state.deltaPositionY;
-        this.setState({
-          deltaPositionY: y + ui.deltaY,
-          }
-        );
+        const y = this.props.deltaPositionY;
+        this.props.handleDrag(y + ui.deltaY, this.props.trackPosition);
       }
 
     addTrack() {
@@ -50,7 +45,7 @@ class Track extends React.Component {
 
     renderHandle() {
         if (this.props.isDraggable) {
-            return <button className="handle">{this.state.deltaPositionY}||{this.props.trackPosition}</button>;
+            return <button className="handle">{this.props.deltaPositionY[this.props.trackPosition]}||{this.props.trackPosition}</button>;
         } else {
             return;
         }
