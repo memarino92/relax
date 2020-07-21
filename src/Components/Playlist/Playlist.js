@@ -20,7 +20,7 @@ class Playlist extends React.Component {
                 <input 
                 onChange={this.handleNameChange}
                 value={this.props.playlistName} />
-                <Droppable droppableId="Playlist">
+                <Droppable droppableId="PlaylistTracks">
                   {provided => ( 
                     <TrackList 
                     provided={provided}
@@ -28,10 +28,7 @@ class Playlist extends React.Component {
                     tracks={this.props.playlistTracks}
                     isRemoval={true} 
                     onRemove={this.props.onRemove}
-                    isDraggable={true}>
-                        {provided.placeholder}
-                    </TrackList>
-                    )}
+                    isDroppable={true} />                    )}
                 </Droppable>
                 <button 
                 className="Playlist-save"

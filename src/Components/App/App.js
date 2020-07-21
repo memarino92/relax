@@ -26,6 +26,7 @@ class App extends React.Component {
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
     this.updateSearchTerms = this.updateSearchTerms.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
 
   }
 
@@ -83,8 +84,25 @@ class App extends React.Component {
   }
 
   onDragEnd(result) {
-    //TODO reorder column
-  }
+    const { destination, source } = result;
+    if (!destination) {
+      return;
+    }
+    if (
+    destination.droppableId === source.droppableId &&
+    destination.index === source.index
+    ) {
+    return;
+    }
+
+    const newPlaylistTracks = Array.from(this.state.playlistTracks);
+    newPlaylistTracks.splice(source.index, 1);
+    newPlaylistTracks.splice(destination.index, 0, this.state.playlistTracks[source.index]);
+
+    this.setState({
+      playlistTracks: newPlaylistTracks
+    })
+}
 
   render() {
     return (

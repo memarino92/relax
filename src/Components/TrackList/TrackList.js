@@ -5,30 +5,37 @@ import Track from '../Track/Track';
 
 class TrackList extends React.Component {
 
-    renderDraggable() {
-        if (this.props.isDraggable) {
-            const { provided, innerRef } = this.props;
+    setRef = (ref) => {
+        // keep a reference to the dom ref as an instance property
+        this.ref = ref;
+        // give the dom ref to react-beautiful-dnd
+        this.props.innerRef(ref);
+    }
+
+    render() {
+        if (this.props.isDroppable) {
+            const { provided } = this.props;
             return (
                 <div 
                 className="TrackList"
-                {...provided.droppableProps} ref={innerRef}>
+                {...provided.droppableProps} ref={this.setRef}>
                 {this.props.tracks.map((track, index) => {
                         return (
-                            <Draggable draggableId={track.id} key ={track.id} index={index}>
+                            <Draggable draggableId={track.id} key={track.id} index={index}>
                                 {(provided) => (
                                 <Track 
                                 provided={provided}
                                 innerRef={provided.innerRef}
-                                key={track.id} 
                                 track={track}
                                 onAdd={this.props.onAdd}
                                 onRemove={this.props.onRemove}
                                 isRemoval={this.props.isRemoval} 
-                                isDraggable={this.props.isDraggable}/>
+                                isDraggable={this.props.isDroppable}/>
                                 )}
                             </Draggable>
                         )
                     })}
+                {provided.placeholder}
                 </div>
             );
         } else {
@@ -48,11 +55,6 @@ class TrackList extends React.Component {
                 </div>
             );
         }
-    }
-    
-    
-    render() {
-        return this.renderDraggable();
     }
 }
 

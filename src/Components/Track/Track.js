@@ -35,16 +35,22 @@ class Track extends React.Component {
         }
     }
 
-    renderDroppable() {
-        if (this.props.isDroppable) {
-            const { provided, innerRef } = this.props;
+    setRef = (ref) => {
+        // keep a reference to the dom ref as an instance property
+        this.ref = React.createRef();
+        // give the dom ref to react-beautiful-dnd
+        this.props.innerRef(ref);
+    }
+
+    render() {
+        if (this.props.isDraggable) {
+            const { provided } = this.props;
             return (
                 <div
                 className="Track"
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
-                ref={innerRef}
-                key={this.props.key}>
+                ref={this.setRef}>
                     <div className="Track-information">
                         <h3>{this.props.track.name}</h3>
                         <p>{this.props.track.artist} | {this.props.track.album}</p>
@@ -62,11 +68,7 @@ class Track extends React.Component {
                     {this.renderAction(this.props.track)}
                 </div>
             );
-        }
-    }
-
-    render() {
-        return this.renderDroppable();
+        };
     }
 }
 
