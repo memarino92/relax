@@ -42,15 +42,26 @@ class Track extends React.Component {
         this.props.innerRef(ref);
     }
 
+    renderDragStyle() {
+        if (this.props.isDragging) {
+            return {backgroundColor: "rgba(1, 12, 63, 1)"};
+        } else {
+            return {backgroundColor: "transparent"};
+        }
+    }
+
     render() {
         if (this.props.isDraggable) {
             const { provided } = this.props;
+            //const style = (this.props.isDragging ? "rgba(1, 12, 63, 1)" : "transparent");
             return (
                 <div
                 className="Track"
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
-                ref={this.setRef}>
+                ref={this.setRef}
+                style={this.props.style}
+                >
                     <div className="Track-information">
                         <h3>{this.props.track.name}</h3>
                         <p>{this.props.track.artist} | {this.props.track.album}</p>

@@ -18,20 +18,33 @@ class TrackList extends React.Component {
             return (
                 <div 
                 className="TrackList"
-                {...provided.droppableProps} ref={this.setRef}>
+                {...provided.droppableProps} 
+                ref={this.setRef}>
                 {this.props.tracks.map((track, index) => {
                         return (
-                            <Draggable draggableId={track.id} key={track.id} index={index}>
-                                {(provided) => (
-                                <Track 
-                                provided={provided}
-                                innerRef={provided.innerRef}
-                                track={track}
-                                onAdd={this.props.onAdd}
-                                onRemove={this.props.onRemove}
-                                isRemoval={this.props.isRemoval} 
-                                isDraggable={this.props.isDroppable}/>
-                                )}
+                            <Draggable 
+                            draggableId={track.id} 
+                            key={track.id} 
+                            index={index}>
+                                {(provided, snapshot) => {
+                                    const style = {
+                                        ...provided.draggableProps.style,
+                                //        transition: 'background-color 2s ease',
+                                        backgroundColor: snapshot.isDragging ? "rgba(108, 65, 233, 1)" : "transparent",
+                                      };
+                                    return (<Track 
+                                    provided={provided}
+                                    innerRef={provided.innerRef}
+                                    track={track}
+                                    onAdd={this.props.onAdd}
+                                    onRemove={this.props.onRemove}
+                                    isRemoval={this.props.isRemoval} 
+                                    isDraggable={this.props.isDroppable}
+                                    isDragging={snapshot.isDragging}
+                                    style={style}
+                                    />
+                                    );
+                                }}
                             </Draggable>
                         )
                     })}
