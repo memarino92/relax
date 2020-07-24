@@ -29,8 +29,7 @@ class TrackList extends React.Component {
                                 {(provided, snapshot) => {
                                     const style = {
                                         ...provided.draggableProps.style,
-                                //        transition: 'background-color 2s ease',
-                                        backgroundColor: snapshot.isDragging ? "rgba(108, 65, 233, 1)" : "transparent",
+                                        backgroundColor: snapshot.isDragging ? "rgba(1, 12, 63, 1)" : "transparent",
                                       };
                                     return (<Track 
                                     provided={provided}

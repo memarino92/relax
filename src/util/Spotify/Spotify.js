@@ -2,12 +2,15 @@
 const Spotify = {
     accessToken: '',
 
+    userId: '',
+
+    authHeaders: {},
+    
     redirectUri: process.env.REACT_APP_REDIRECT_URI,
 
     clientId: process.env.REACT_APP_CLIENT_ID,
 
     getAccessToken() {
-       
         if (Spotify.accessToken) {
             return Spotify.accessToken;
         } else {
@@ -27,10 +30,28 @@ const Spotify = {
         }
     },
 
+    async getUserId() {
+        if (!Spotify.accessToken) {
+            Spotify.getAccessToken();
+        }
+        if (Spotify.userId) {
+            return Spotify.userId;
+        } else {
+            const authHeaders = {Authorization: `Bearer ${Spotify.getAccessToken()}`};
+            Spotify.authHeaders = authHeaders;
+            const idRequest = await fetch('https://api.spotify.com/v1/me', {
+                headers: Spotify.authHeaders
+            });
+            const jsonId = await idRequest.json();
+            const userId = jsonId.id;
+            Spotify.userId = userId;
+            return userId;
+        }
+    },
+
     async search(term) {
-        const authHeaders = {Authorization: `Bearer ${Spotify.accessToken}`};
         const response = await fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
-            headers: authHeaders
+            headers: Spotify.authHeaders
         });
         const jsonResponse = await response.json();
         if (!jsonResponse.tracks) {
@@ -53,25 +74,19 @@ const Spotify = {
         if(!name && trackUris) {
             return;
         } else {
-            const authHeaders = {Authorization: `Bearer ${Spotify.accessToken}`};
-            const idRequest = await fetch('https://api.spotify.com/v1/me', {
-                headers: authHeaders
-            });
-            const jsonId = await idRequest.json();
-            const userId = jsonId.id;
+            const userId = await Spotify.getUserId();
             const newPlaylistResponse = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-                headers: authHeaders,
+                headers: Spotify.authHeaders,
                 method: 'POST',
                 body: JSON.stringify({ name: name })
             });
             const jsonPlaylistId = await newPlaylistResponse.json();
             const playlistId = jsonPlaylistId.id;
             await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-                headers: authHeaders,
+                headers: Spotify.authHeaders,
                 method: 'POST',
                 body: JSON.stringify({ uris: trackUris })
             });
-
         }
     }
 };

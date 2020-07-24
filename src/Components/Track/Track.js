@@ -53,7 +53,6 @@ class Track extends React.Component {
     render() {
         if (this.props.isDraggable) {
             const { provided } = this.props;
-            //const style = (this.props.isDragging ? "rgba(1, 12, 63, 1)" : "transparent");
             return (
                 <div
                 className="Track"
