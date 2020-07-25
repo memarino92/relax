@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
-import SearchResults from '../SearchResults/SearchResults';
+import ArtistTracks from '../ArtistTracks/ArtistTracks';
 import Playlist from '../Playlist/Playlist';
 import Spotify from '../../util/Spotify/Spotify';
-import PlaylistList from '../PlaylistList/PlaylistList';
+import ArtistList from '../ArtistList/ArtistList';
 import { DragDropContext } from 'react-beautiful-dnd';
 
 class App extends React.Component {
@@ -20,7 +20,23 @@ class App extends React.Component {
     
       playlistTracks: [],
 
-      userPlaylists: [],
+      artistTracks: [
+        {
+          name: 'Test Track',
+          id: '1',
+          artist: 'fake artist',
+          album: 'don\'t exist'
+        }
+      ],
+
+      relatedArtistsList: [
+        {
+          name: 'Test Artist',
+          id: '1'
+        }
+      ],
+
+      selectedArtist: {}
     };
 
     this.addTrack = this.addTrack.bind(this);
@@ -31,6 +47,7 @@ class App extends React.Component {
     this.updateSearchTerms = this.updateSearchTerms.bind(this);
     this.onDragEnd = this.onDragEnd.bind(this);
     this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
+    this.getTopTracks = this.getTopTracks.bind(this);
 
   }
 
@@ -71,10 +88,14 @@ class App extends React.Component {
   }
 
   async search() {
-    const newResults = await Spotify.search(this.state.searchTerms);
+    const selectedArtist = await Spotify.searchForArtist(this.state.searchTerms);
     this.setState({
-      searchResults: newResults
+      selectedArtist: selectedArtist
     });
+    const relatedArtists = await Spotify.getRelatedArtists(selectedArtist.id);
+    this.setState({
+      relatedArtistsList: relatedArtists
+    })
   }
 
   updateSearchTerms(terms) {
@@ -96,6 +117,13 @@ class App extends React.Component {
     this.setState({
       playlistTracks: newState.tracks,
       playlistName: newState.name
+    });
+  }
+
+  async getTopTracks(artistId) {
+    const newArtistTracks = await Spotify.getTopTracks(artistId);
+    this.setState({
+      artistTracks: newArtistTracks
     });
   }
 
@@ -131,12 +159,12 @@ class App extends React.Component {
             onTermChange={this.updateSearchTerms} 
             playlistName={this.state.playlistName}/>
           <div className="App-playlist">
-            <SearchResults 
-            searchResults={this.state.searchResults} 
+            <ArtistList 
+            artists={this.state.relatedArtistsList} 
+            getTopTracks={this.getTopTracks} />
+            <ArtistTracks 
+            tracks={this.state.artistTracks} 
             onAdd={this.addTrack} />
-            <PlaylistList 
-            userPlaylists={this.state.userPlaylists}
-            getPlaylistTracks={this.getPlaylistTracks} />
             <DragDropContext onDragEnd={this.onDragEnd}>
               <Playlist 
               playlistName={this.state.playlistName} 

@@ -182,6 +182,65 @@ const Spotify = {
             playlistTracksUrl = jsonResponse.next;
         }
         return {tracks: playlistTracks, name: playlistName};
+    },
+
+    async searchForArtist(term) {
+        const authHeaders = await Spotify.getAuthHeaders();
+        const searchArtistUrl = `https://api.spotify.com/v1/search?type=artist&q=${term}`;
+        const response = await fetch(searchArtistUrl, {
+            headers: authHeaders
+        });
+        const jsonResponse = await response.json();
+        const artist = {
+            name: jsonResponse.artists.items[0].name,
+            id: jsonResponse.artists.items[0].id
+        };
+        return artist;
+    },
+    
+    async getRelatedArtists(artistId) {
+        const authHeaders = await Spotify.getAuthHeaders();
+        const relatedArtistUrl = `https://api.spotify.com/v1/artists/${artistId}/related-artists`;
+        const response = await fetch(relatedArtistUrl, {
+            headers: authHeaders
+        });
+        const jsonResponse = await response.json();
+        if (!jsonResponse.artists) {
+            return [];
+        }
+        let relatedArtists = [];
+        jsonResponse.artists.forEach(artist => {
+            const relatedArtist =  {
+                name: artist.name,
+                id: artist.id
+            };
+            relatedArtists.push(relatedArtist);
+        });
+        return relatedArtists;
+    },
+
+    async getTopTracks(artistId) {
+        const authHeaders = await Spotify.getAuthHeaders();
+        const topTracksUrl = `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=from_token`;
+        const response = await fetch(topTracksUrl, {
+            headers: authHeaders
+        });
+        const jsonResponse = await response.json();
+        if (!jsonResponse.tracks) {
+            return [];
+        }
+        let topTracks = [];
+        jsonResponse.tracks.forEach(track => {
+            const topTrack = {
+                id: track.id,
+                name: track.name,
+                artist: track.artists[0].name,
+                album: track.album.name,
+                uri: track.uri
+            };
+            topTracks.push(topTrack);
+        });
+        return topTracks;
     }
 };
 
