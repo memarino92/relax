@@ -4,6 +4,7 @@ import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import Spotify from '../../util/Spotify/Spotify';
+import PlaylistList from '../PlaylistList/PlaylistList';
 import { DragDropContext } from 'react-beautiful-dnd';
 
 class App extends React.Component {
@@ -17,7 +18,9 @@ class App extends React.Component {
     
       playlistName: 'New Playlist',
     
-      playlistTracks: []
+      playlistTracks: [],
+
+      userPlaylists: [],
     };
 
     this.addTrack = this.addTrack.bind(this);
@@ -27,6 +30,7 @@ class App extends React.Component {
     this.search = this.search.bind(this);
     this.updateSearchTerms = this.updateSearchTerms.bind(this);
     this.onDragEnd = this.onDragEnd.bind(this);
+    this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
 
   }
 
@@ -79,8 +83,20 @@ class App extends React.Component {
     });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     window.addEventListener('load', () => {Spotify.getAccessToken()});
+    const userPlaylists = await Spotify.getUserPlaylists();
+    this.setState({
+      userPlaylists: userPlaylists
+    });
+  }
+
+  async getPlaylistTracks(playlistId, playlistName) {
+    const newState = await Spotify.getPlaylistTracks(playlistId, playlistName);
+    this.setState({
+      playlistTracks: newState.tracks,
+      playlistName: newState.name
+    });
   }
 
   onDragEnd(result) {
@@ -89,15 +105,16 @@ class App extends React.Component {
       return;
     }
     if (
-    destination.droppableId === source.droppableId &&
-    destination.index === source.index
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
     ) {
-    return;
+      return;
     }
 
     const newPlaylistTracks = Array.from(this.state.playlistTracks);
+    const trackMoved = newPlaylistTracks[source.index];
     newPlaylistTracks.splice(source.index, 1);
-    newPlaylistTracks.splice(destination.index, 0, this.state.playlistTracks[source.index]);
+    newPlaylistTracks.splice(destination.index, 0, trackMoved);
 
     this.setState({
       playlistTracks: newPlaylistTracks
@@ -117,6 +134,9 @@ class App extends React.Component {
             <SearchResults 
             searchResults={this.state.searchResults} 
             onAdd={this.addTrack} />
+            <PlaylistList 
+            userPlaylists={this.state.userPlaylists}
+            getPlaylistTracks={this.getPlaylistTracks} />
             <DragDropContext onDragEnd={this.onDragEnd}>
               <Playlist 
               playlistName={this.state.playlistName} 
