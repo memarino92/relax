@@ -1,15 +1,22 @@
 import React from 'react';
 import './Artist.css';
+import { ReactComponent as SearchIcon } from './search_icon.svg';
+
 
 class Artist extends React.Component {
     constructor(props) {
         super(props);
 
         this.getTopTracks = this.getTopTracks.bind(this);
+        this.searchArtist = this.searchArtist.bind(this);
     }
 
     getTopTracks() {
         this.props.getTopTracks(this.props.artist.id);
+    }
+
+    searchArtist() {
+        this.props.onSearch(this.props.artist);
     }
 
     render() {
@@ -20,6 +27,10 @@ class Artist extends React.Component {
                 <div className="Artist-information">
                     <h3>{this.props.artist.name}</h3>
                 </div>
+                <button 
+                className="Artist-action"
+                onClick={this.searchArtist}
+                ><SearchIcon /></button>
             </div>
         );
     }

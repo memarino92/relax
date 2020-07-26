@@ -1,4 +1,4 @@
-.User-playlist {
+.Artist {
     display: flex;
     align-items: center;
     border-bottom: 1px solid rgba(256, 256, 256, 0.8);
@@ -10,11 +10,11 @@
     font-size: 1.05rem;
   }
   
-  .User-playlist:hover {
+  .Artist:hover {
     color: rgba(265, 265, 265, .5);
   }
   
-  .User-playlist-information {
+  .Artist-information {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -23,12 +23,23 @@
     margin-bottom: .22rem;
   }
   
-  .User-playlist-information h3 {
+  .Artist-information h3 {
     margin-bottom: .22rem;
   }
   
-  .User-playlist-information p {
+  .Artist-information p {
     font-size: .83rem;
     font-weight: 300;
     color: rgba(256, 256, 256, 0.8);
+  }
+
+  .Artist-action {
+    cursor: pointer;
+    font-size: 1.05rem;
+    transition: color .25s;
+    border: 0px;
+    background-color: rgba(0, 0, 0, 0);
+    -webkit-filter: invert(1); /* safari 6.0 - 9.0 */
+          filter: invert(1);
+    transform: scale(0.5);
   }
