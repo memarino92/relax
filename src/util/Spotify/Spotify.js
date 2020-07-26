@@ -79,15 +79,18 @@ const Spotify = {
         if(!name && trackUris) {
             return;
         } else {
-            const newPlaylistResponse = await fetch(`https://api.spotify.com/v1/users/${Spotify.getUserId()}/playlists`, {
-                headers: await Spotify.getAuthHeaders(),
+            const authHeaders = await Spotify.getAuthHeaders();
+            const userId = await Spotify.getUserId();
+            const newPlaylistUrl = `https://api.spotify.com/v1/users/${userId}/playlists`
+            const newPlaylistResponse = await fetch(newPlaylistUrl, {
+                headers: authHeaders,
                 method: 'POST',
                 body: JSON.stringify({ name: name })
             });
             const jsonPlaylistId = await newPlaylistResponse.json();
             const playlistId = jsonPlaylistId.id;
             await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-                headers: await Spotify.getAuthHeaders(),
+                headers: authHeaders,
                 method: 'POST',
                 body: JSON.stringify({ uris: trackUris })
             });
