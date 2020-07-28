@@ -173,13 +173,7 @@ const Spotify = {
                 return;
             }
             jsonResponse.items.forEach((track) => {
-                const playlistTrack =  {
-                    id: track.track.id,
-                    name: track.track.name,
-                    artist: track.track.artists[0].name,
-                    album: track.track.album.name,
-                    uri: track.track.uri
-                };
+                const playlistTrack =  this.playlistTracktoTrackconverter(track);
                 playlistTracks.push(playlistTrack)
             });
             playlistTracksUrl = jsonResponse.next;
@@ -245,6 +239,7 @@ const Spotify = {
             name: spotifyTrackObject.name,
             artist: spotifyTrackObject.artists[0].name,
             album: spotifyTrackObject.album.name,
+            albumImageUrls: spotifyTrackObject.album.images,
             uri: spotifyTrackObject.uri
         };
         return localTrackObject;
@@ -254,9 +249,17 @@ const Spotify = {
     artistToArtistConverter(spotifyArtistObject) {
         const localArtistObject = {
             name: spotifyArtistObject.name,
-            id: spotifyArtistObject.id
+            id: spotifyArtistObject.id,
+            imageUrls: spotifyArtistObject.images
         };
         return localArtistObject;
+    },
+
+    //converts Spotify playlist track object to local track object
+    playlistTracktoTrackconverter(spotifyPlaylistTrackObject) {
+        const spotifyTrackObject = spotifyPlaylistTrackObject.track;
+        const localTrackObject = this.trackToTrackConverter(spotifyTrackObject);
+        return localTrackObject;
     }
 
 };

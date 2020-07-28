@@ -2,7 +2,6 @@ import React from 'react';
 import './Track.css';
 
 class Track extends React.Component {
-    
     constructor(props) {
         super(props);
 
@@ -18,17 +17,17 @@ class Track extends React.Component {
     removeTrack() {
         this.props.onRemove(this.props.track);
     }
-    
+
     renderAction(track) {
         if (this.props.isRemoval) {
             return (
-                <button 
+                <button
                 className="Track-action"
                 onClick={this.removeTrack}>-</button>
             );
         } else {
             return (
-                <button 
+                <button
                 className="Track-action"
                 onClick={this.addTrack}>+</button>
             );
@@ -62,7 +61,12 @@ class Track extends React.Component {
                 style={this.props.style}
                 >
                     <div className="Track-information">
-                        <h3>{this.props.track.name}</h3>
+                        <div className="Track-information-top-row">
+                            <img
+                            src={this.props.track.albumImageUrls[this.props.track.albumImageUrls.length-1].url}
+                            alt="album cover" />
+                            <h3>{this.props.track.name}</h3>
+                        </div>
                         <p>{this.props.track.artist} | {this.props.track.album}</p>
                     </div>
                     {this.renderAction(this.props.track)}
@@ -72,7 +76,12 @@ class Track extends React.Component {
             return (
                 <div className="Track">
                 <div className="Track-information">
-                    <h3>{this.props.track.name}</h3>
+                    <div className="Track-information-top-row">
+                        <img
+                        src={this.props.track.albumImageUrls[this.props.track.albumImageUrls.length-1].url}
+                        alt="album cover" />
+                        <h3>{this.props.track.name}</h3>
+                    </div>
                     <p>{this.props.track.artist} | {this.props.track.album}</p>
                 </div>
                     {this.renderAction(this.props.track)}

@@ -2,31 +2,40 @@
     display: flex;
     align-items: center;
     border-bottom: 1px solid rgba(256, 256, 256, 0.8);
-    height: auto;    
+    height: auto;
     margin-bottom: .22rem;
     transition: background-color 0.2s ease;
     padding: .5rem;
     cursor: pointer;
     font-size: 1.05rem;
   }
-  
+
   .Artist:hover {
     color: rgba(265, 265, 265, .5);
   }
-  
+
   .Artist-information {
     flex-grow: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
     min-height: 1.5rem;
     margin-bottom: .22rem;
   }
-  
+
+  .Artist-information img {
+    display: inline-block;
+    height: 2rem;
+    width: 2rem;
+    border-radius: 100%;
+    margin-right: .5rem;
+  }
+
   .Artist-information h3 {
     margin-bottom: .22rem;
   }
-  
+
   .Artist-information p {
     font-size: .83rem;
     font-weight: 300;

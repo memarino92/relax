@@ -25,6 +25,7 @@ class Artist extends React.Component {
             className="Artist"
             onClick={this.getTopTracks}>
                 <div className="Artist-information">
+                <img src={this.props.artist.imageUrls[this.props.artist.imageUrls.length-1].url} alt={this.props.artist.name}/>
                     <h3>{this.props.artist.name}</h3>
                 </div>
                 <button
