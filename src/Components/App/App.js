@@ -10,12 +10,12 @@ import { DragDropContext } from 'react-beautiful-dnd';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       searchTerms: '',
-          
+
       playlistName: 'New Playlist',
-    
+
       playlistTracks: [],
 
       artistTracks: [],
@@ -144,28 +144,28 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1><span className="highlight">R</span>elated <span className="highlight">A</span>rtist e<span className="highlight">X</span>plorer</h1>
+        <h1><span className="highlight">REL</span>ated <span className="highlight">A</span>rtist e<span className="highlight">X</span>plorer</h1>
         <div className="App">
-            <SearchBar 
+            <SearchBar
             onSearch={this.search}
-            onTermChange={this.updateSearchTerms} 
+            onTermChange={this.updateSearchTerms}
             playlistName={this.state.playlistName}
             searchTerms={this.state.searchTerms} />
           <div className="App-playlist">
-            <ArtistList 
+            <ArtistList
             artistName={this.state.selectedArtist.name}
-            artists={this.state.relatedArtistsList} 
-            getTopTracks={this.getTopTracks} 
+            artists={this.state.relatedArtistsList}
+            getTopTracks={this.getTopTracks}
             onSearch={this.updateSelectedArtist} />
-            <ArtistTracks 
-            tracks={this.state.artistTracks} 
+            <ArtistTracks
+            tracks={this.state.artistTracks}
             onAdd={this.addTrack} />
             <DragDropContext onDragEnd={this.onDragEnd}>
-              <Playlist 
-              playlistName={this.state.playlistName} 
+              <Playlist
+              playlistName={this.state.playlistName}
               playlistTracks={this.state.playlistTracks}
-              onRemove={this.removeTrack} 
-              onNameChange={this.updatePlaylistName} 
+              onRemove={this.removeTrack}
+              onNameChange={this.updatePlaylistName}
               onSave={this.savePlaylist} />
             </DragDropContext>
           </div>

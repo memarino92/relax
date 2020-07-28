@@ -1,86 +1,83 @@
-
 const Spotify = {
     accessToken: '',
 
     userId: '',
 
     authHeaders: {},
-    
+
     redirectUri: process.env.REACT_APP_REDIRECT_URI,
 
     clientId: process.env.REACT_APP_CLIENT_ID,
 
     getAccessToken() {
-        if (Spotify.accessToken) {
-            return Spotify.accessToken;
+        if (this.accessToken) {
+            return this.accessToken;
         } else {
             let url = window.location.href;
             if (url.match(/access_token=([^&]*)/)) {
-                Spotify.accessToken = url.match(/access_token=([^&]*)/)[1];
+                this.accessToken = url.match(/access_token=([^&]*)/)[1];
                 let expiresIn = Number(url.match(/expires_in=([^&]*)/)[1]);
 
-                window.setTimeout(() => Spotify.accessToken = '', expiresIn * 1000);
+                window.setTimeout(() => this.accessToken = '', expiresIn * 1000);
                 window.history.pushState('Access Token', null, '/');
 
-                return Spotify.accessToken;
+                return this.accessToken;
 
             } else {
-                window.location = `https://accounts.spotify.com/authorize?client_id=${Spotify.clientId}&response_type=token&scope=playlist-modify-public%20playlist-read-collaborative%20playlist-read-private%20playlist-modify-private&redirect_uri=${Spotify.redirectUri}`;
+                window.location = `https://accounts.spotify.com/authorize?client_id=${this.clientId}&response_type=token&scope=playlist-modify-public%20playlist-read-collaborative%20playlist-read-private%20playlist-modify-private&redirect_uri=${this.redirectUri}`;
             }
         }
     },
 
     async getUserId() {
-        if (Spotify.userId) {
-            return Spotify.userId;
+        if (this.userId) {
+            return this.userId;
         } else {
+            const authHeaders = await this.getAuthHeaders();
             const idRequest = await fetch('https://api.spotify.com/v1/me', {
-                headers: await Spotify.getAuthHeaders()
+                headers: authHeaders
             });
             const jsonId = await idRequest.json();
             const userId = jsonId.id;
-            Spotify.userId = userId;
-            return Spotify.userId;
+            this.userId = userId;
+            return this.userId;
         }
     },
 
     async getAuthHeaders() {
-        if (Spotify.authHeaders.Authorization) {
-            return Spotify.authHeaders;
+        if (this.authHeaders.Authorization) {
+            return this.authHeaders;
         } else {
-            const authHeaders = { Authorization: `Bearer ${Spotify.getAccessToken()}` };
-            Spotify.authHeaders = authHeaders;
-            return Spotify.authHeaders;
+            const accessToken = this.getAccessToken()
+            const authHeaders = { Authorization: `Bearer ${accessToken}` };
+            this.authHeaders = authHeaders;
+            return this.authHeaders;
         }
     },
 
+    //rename to search for track and update calls on other branches
     async search(term) {
         const response = await fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
-            headers: await Spotify.getAuthHeaders()
+            headers: await this.getAuthHeaders()
         });
         const jsonResponse = await response.json();
         if (!jsonResponse.tracks) {
             return [];
         } else {
             const tracks = jsonResponse.tracks.items.map((track) => {
-                return {
-                    id: track.id,
-                    name: track.name,
-                    artist: track.artists[0].name,
-                    album: track.album.name,
-                    uri: track.uri
-                };
+                return this.trackToTrackConverter(track);
             });
             return tracks;
         }
     },
 
+    //should return playlist object
     async savePlaylist(name, trackUris) {
         if(!name && trackUris) {
             return;
         } else {
-            const authHeaders = await Spotify.getAuthHeaders();
-            const userId = await Spotify.getUserId();
+            const authHeaders = await this.getAuthHeaders();
+            const userId = await this.getUserId();
             const newPlaylistUrl = `https://api.spotify.com/v1/users/${userId}/playlists`
             const newPlaylistResponse = await fetch(newPlaylistUrl, {
                 headers: authHeaders,
@@ -97,16 +94,17 @@ const Spotify = {
         }
     },
 
+    //needs cleaning up in paging method and playlist conversion
     async getUserPlaylists() {
         const response = await fetch('https://api.spotify.com/v1/me/playlists', {
-            headers: await Spotify.getAuthHeaders()
+            headers: await this.getAuthHeaders()
         });
         let jsonResponse = await response.json();
         if (!jsonResponse.items) {
             return [];
         } else {
             let userPlaylists = [];
-            const userId = await Spotify.getUserId();
+            const userId = await this.getUserId();
             jsonResponse.items.forEach((playlist) => {
                 const userPlaylist = {
                     id: playlist.id,
@@ -125,7 +123,7 @@ const Spotify = {
             while (jsonResponse.next) {
                 let nextUrl = jsonResponse.next;
                 let nextResponse = await fetch(nextUrl, {
-                    headers: await Spotify.getAuthHeaders()
+                    headers: await this.getAuthHeaders()
                 });
                 jsonResponse = await nextResponse.json();
                 jsonResponse.items.forEach((playlist) => {
@@ -141,13 +139,14 @@ const Spotify = {
                     };
                     if (userPlaylist.collaborative || userPlaylist.isOwner) {
                         userPlaylists.push(userPlaylist);
-                    } 
+                    }
                 });
             }
+            //sort function should be a named module method with additional, optional arguments
             userPlaylists.sort((a, b) => {
                 const playlistA = a.name.toUpperCase();
                 const playlistB = b.name.toUpperCase();
-              
+
                 let comparison = 0;
                 if (playlistA > playlistB) {
                   comparison = 1;
@@ -160,8 +159,9 @@ const Spotify = {
         }
     },
 
+    //need to clean up track to track conversion, create playlist track => local track method
     async getPlaylistTracks(playlistId, playlistName) {
-        const authHeaders = await Spotify.getAuthHeaders();
+        const authHeaders = await this.getAuthHeaders();
         let playlistTracksUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
         let playlistTracks = [];
         while (playlistTracksUrl) {
@@ -187,22 +187,22 @@ const Spotify = {
         return {tracks: playlistTracks, name: playlistName};
     },
 
+    //returns first artist from array of response
     async searchForArtist(term) {
-        const authHeaders = await Spotify.getAuthHeaders();
+        const authHeaders = await this.getAuthHeaders();
         const searchArtistUrl = `https://api.spotify.com/v1/search?type=artist&q=${term}`;
         const response = await fetch(searchArtistUrl, {
             headers: authHeaders
         });
         const jsonResponse = await response.json();
-        const artist = {
-            name: jsonResponse.artists.items[0].name,
-            id: jsonResponse.artists.items[0].id
-        };
+        const artist = this.artistToArtistConverter(jsonResponse.artists.items[0]);
+
         return artist;
     },
-    
+
+    //returns array of local artist objects
     async getRelatedArtists(artistId) {
-        const authHeaders = await Spotify.getAuthHeaders();
+        const authHeaders = await this.getAuthHeaders();
         const relatedArtistUrl = `https://api.spotify.com/v1/artists/${artistId}/related-artists`;
         const response = await fetch(relatedArtistUrl, {
             headers: authHeaders
@@ -213,17 +213,15 @@ const Spotify = {
         }
         let relatedArtists = [];
         jsonResponse.artists.forEach(artist => {
-            const relatedArtist =  {
-                name: artist.name,
-                id: artist.id
-            };
+            const relatedArtist =  this.artistToArtistConverter(artist);
             relatedArtists.push(relatedArtist);
         });
         return relatedArtists;
     },
 
+    //returns artists top 10 tracks
     async getTopTracks(artistId) {
-        const authHeaders = await Spotify.getAuthHeaders();
+        const authHeaders = await this.getAuthHeaders();
         const topTracksUrl = `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=from_token`;
         const response = await fetch(topTracksUrl, {
             headers: authHeaders
@@ -234,17 +232,33 @@ const Spotify = {
         }
         let topTracks = [];
         jsonResponse.tracks.forEach(track => {
-            const topTrack = {
-                id: track.id,
-                name: track.name,
-                artist: track.artists[0].name,
-                album: track.album.name,
-                uri: track.uri
-            };
+            const topTrack = this.trackToTrackConverter(track);
             topTracks.push(topTrack);
         });
         return topTracks;
+    },
+
+    //converts Spotify track objects to local track objects
+    trackToTrackConverter(spotifyTrackObject) {
+        const localTrackObject = {
+            id: spotifyTrackObject.id,
+            name: spotifyTrackObject.name,
+            artist: spotifyTrackObject.artists[0].name,
+            album: spotifyTrackObject.album.name,
+            uri: spotifyTrackObject.uri
+        };
+        return localTrackObject;
+    },
+
+    //converts Spotify artist object to local artist object
+    artistToArtistConverter(spotifyArtistObject) {
+        const localArtistObject = {
+            name: spotifyArtistObject.name,
+            id: spotifyArtistObject.id
+        };
+        return localArtistObject;
     }
+
 };
 
 export default Spotify;

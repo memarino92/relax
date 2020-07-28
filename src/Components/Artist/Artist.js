@@ -21,13 +21,13 @@ class Artist extends React.Component {
 
     render() {
         return (
-            <div 
+            <div
             className="Artist"
             onClick={this.getTopTracks}>
                 <div className="Artist-information">
                     <h3>{this.props.artist.name}</h3>
                 </div>
-                <button 
+                <button
                 className="Artist-action"
                 onClick={this.searchArtist}
                 ><SearchIcon /></button>
