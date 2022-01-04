@@ -2,7 +2,6 @@ import React from 'react';
 import './Track.css';
 
 class Track extends React.Component {
-    
     constructor(props) {
         super(props);
 
@@ -18,33 +17,77 @@ class Track extends React.Component {
     removeTrack() {
         this.props.onRemove(this.props.track);
     }
-    
+
     renderAction(track) {
         if (this.props.isRemoval) {
             return (
-                <button 
+                <button
                 className="Track-action"
                 onClick={this.removeTrack}>-</button>
             );
         } else {
             return (
-                <button 
+                <button
                 className="Track-action"
                 onClick={this.addTrack}>+</button>
             );
         }
     }
-    
+
+    setRef = (ref) => {
+        // keep a reference to the dom ref as an instance property
+        this.ref = React.createRef();
+        // give the dom ref to react-beautiful-dnd
+        this.props.innerRef(ref);
+    }
+
+    renderDragStyle() {
+        if (this.props.isDragging) {
+            return {backgroundColor: "rgba(1, 12, 63, 1)"};
+        } else {
+            return {backgroundColor: "transparent"};
+        }
+    }
+
     render() {
-        return (
-            <div className="Track">
+        if (this.props.isDraggable) {
+            const { provided } = this.props;
+            return (
+                <div
+                className="Track"
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                ref={this.setRef}
+                style={this.props.style}
+                >
+                    <div className="Track-information">
+                        <div className="Track-information-top-row">
+                            <img
+                            src={this.props.track.albumImageUrls[this.props.track.albumImageUrls.length-1].url}
+                            alt="album cover" />
+                            <h3>{this.props.track.name}</h3>
+                        </div>
+                        <p>{this.props.track.artist} | {this.props.track.album}</p>
+                    </div>
+                    {this.renderAction(this.props.track)}
+                </div>
+            );
+        } else {
+            return (
+                <div className="Track">
                 <div className="Track-information">
-                    <h3>{this.props.track.name}</h3>
+                    <div className="Track-information-top-row">
+                        <img
+                        src={this.props.track.albumImageUrls[this.props.track.albumImageUrls.length-1].url}
+                        alt="album cover" />
+                        <h3>{this.props.track.name}</h3>
+                    </div>
                     <p>{this.props.track.artist} | {this.props.track.album}</p>
                 </div>
-                {this.renderAction(this.props.track)}
-            </div>
-        );
+                    {this.renderAction(this.props.track)}
+                </div>
+            );
+        };
     }
 }
 

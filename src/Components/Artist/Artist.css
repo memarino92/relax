@@ -1,56 +1,54 @@
-.Track {
+.Artist {
     display: flex;
     align-items: center;
     border-bottom: 1px solid rgba(256, 256, 256, 0.8);
     height: auto;
     margin-bottom: .22rem;
     transition: background-color 0.2s ease;
-    padding-left: .5rem;
+    padding: .5rem;
+    cursor: pointer;
+    font-size: 1.05rem;
   }
 
-  .Track-action {
+  .Artist:hover {
+    color: rgba(265, 265, 265, .5);
+  }
+
+  .Artist-information {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    min-height: 1.5rem;
+    margin-bottom: .22rem;
+  }
+
+  .Artist-information img {
+    display: inline-block;
+    height: 2rem;
+    width: 2rem;
+    border-radius: 100%;
+    margin-right: .5rem;
+  }
+
+  .Artist-information h3 {
+    margin-bottom: .22rem;
+  }
+
+  .Artist-information p {
+    font-size: .83rem;
+    font-weight: 300;
+    color: rgba(256, 256, 256, 0.8);
+  }
+
+  .Artist-action {
     cursor: pointer;
-    padding: .5rem;
     font-size: 1.05rem;
     transition: color .25s;
     border: 0px;
     background-color: rgba(0, 0, 0, 0);
-    color: #fff;
-  }
-
-  .Track-action:hover {
-    color: rgba(265, 265, 265, .5);
-  }
-
-  .Track-information {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 72px;
-    margin-bottom: .22rem;
-  }
-
-  .Track-information-top-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .Track-information-top-row img {
-    display: inline-block;
-    height: 2rem;
-    width: 2rem;
-    margin-right: .5rem;
-  }
-
-  .Track-information h3 {
-    display: inline-block;
-    margin-bottom: .22rem;
-  }
-
-  .Track-information p {
-    font-size: .83rem;
-    font-weight: 300;
-    color: rgba(256, 256, 256, 0.8);
+    -webkit-filter: invert(1); /* safari 6.0 - 9.0 */
+          filter: invert(1);
+    transform: scale(0.5);
   }

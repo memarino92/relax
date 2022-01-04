@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     overflow-y: scroll;
-    width: 37%;
+    width: 33%;
     max-height: 950px;
     padding: 2.27rem 1.16rem;
     background-color: rgba(1, 12, 63, 0.7);
@@ -19,6 +19,7 @@
     font-family: 'Poppins', sans-serif;
     font-size: 1.55rem;
     color: #fff;
+    margin-bottom: 1rem;
   }
   
   .Playlist-save {
